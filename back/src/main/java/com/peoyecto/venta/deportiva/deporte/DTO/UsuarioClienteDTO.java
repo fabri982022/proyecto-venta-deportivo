@@ -1,4 +1,4 @@
-package com.peoyecto.venta.deportiva.deporte.model;
+package com.peoyecto.venta.deportiva.deporte.DTO;
 
 import lombok.Data;
 import jakarta.persistence.*;
@@ -9,13 +9,14 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 
-@Entity
+import java.time.LocalDateTime;
+
+@Data
 @Getter
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-
-public class UsuarioLogistica extends Usuario {
-    @Column(length = 100)
-    private String departamento;
+public class UsuarioClienteDTO  extends  UsuarioDTO {
+    private String telefono;
+    private String direccion;
 }

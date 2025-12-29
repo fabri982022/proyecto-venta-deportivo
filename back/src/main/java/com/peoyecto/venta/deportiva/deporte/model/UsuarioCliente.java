@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
+import com.peoyecto.venta.deportiva.deporte.model.Carrito;
 
 @Entity
 @Getter
@@ -16,8 +17,12 @@ import org.hibernate.annotations.UpdateTimestamp;
 @AllArgsConstructor
 public Cliente extends Usuario {
     @Column(length = 15)
-    String telefono;
+    private String telefono;
 
     @Column(length = 100)
-    String direccion;
+    private String direccion;
+
+    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
+    private Carrito carrito;
+
 }
