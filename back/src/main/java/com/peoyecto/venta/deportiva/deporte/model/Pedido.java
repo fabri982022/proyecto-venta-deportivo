@@ -23,22 +23,22 @@ public class Pedido {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(length = 20)
-    Long id_pedido;
+    private Long id_pedido;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = false)
-    Cliente cliente;
+    private Cliente cliente;
 
     @Column
-    Double total;
+    private Double total;
 
     @Column(length = 50)
-    String estado;
+    private String estado;
 
     @CreationTimestamp
     @Column(updatable = false)
-    LocalDateTime fecha_creacion;
+    private LocalDateTime fecha_creacion;
 
     @UpdateTimestamp
-    LocalDateTime fecha_actualizacion;
+    private LocalDateTime fecha_actualizacion;
 }

@@ -12,6 +12,7 @@ import java.time.LocalDateTime;
 import com.peoyecto.venta.deportiva.deporte.model.Cliente;
 import com.peoyecto.venta.deportiva.deporte.model.Producto;
 import org.joda.time.DateTime;
+import java.util.List;
 
 @Entity
 @Data
@@ -24,23 +25,28 @@ public class Carrito {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(length = 20)
-    Long id_carrito;
+    private Long id_carrito;
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = false)
-    Cliente cliente;
+    private Cliente cliente;
 
-    @ManyToOne
-    @JoinColumn(name = "id_producto", nullable = false)
-    Producto producto;
+    @ManyToMany
+    @JoinTable(
+        name = "carrito_productos",
+        joinColumns = @JoinColumn(name = "id_carrito"),
+        inverseJoinColumns = @JoinColumn(name = "id_producto")
+    )
+    private java.util.List<Producto> productos;
+
 
     @Column
-    Integer cantidad;
+    private Integer cantidad;
 
     @Column
-    Double precioTotal;
+    private Double precioTotal;
 
     @Column
     @CreationTimestamp
-    DateTime fechaCreacion;
+    private DateTime fechaCreacion;
 }

@@ -17,5 +17,5 @@ import org.hibernate.annotations.UpdateTimestamp;
 
 public class UsuarioAdmin extends Usuario {
     @Column(length = 100)
-    String departamento;
+    private String departamento;
 }

@@ -20,26 +20,26 @@ public class Producto {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(length = 20)
-    Long id_producto;
+    private Long id_producto;
 
     @Column(length = 100)
-    String nombre;
+    private String nombre;
 
     @Column(length = 255)
-    String descripcion;
+    private String descripcion;
 
     @Column(length = 50)
-    String categoria;
+    private String categoria;
 
     @Column
-    Double precio;
+    private Double precio;
 
     @Column
-    Integer stock;
+    private Integer stock;
 
     @Column
-    Boolean disponible;
+    private Boolean disponible;
 
     @Column(length = 255)
-    String imagenUrl;
+    private String imagenUrl;
 }
