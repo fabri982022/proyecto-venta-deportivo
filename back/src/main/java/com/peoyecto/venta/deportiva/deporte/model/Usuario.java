@@ -42,6 +42,9 @@ public class Usuario {
     @Column(length = 30, unique = true)
     private String nombre_usuario;
 
+    @Column
+    private Boolean estado;
+
     @Enumerated(EnumType.STRING)
     private Rol rol;
 

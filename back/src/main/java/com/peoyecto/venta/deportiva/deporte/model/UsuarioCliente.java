@@ -15,7 +15,7 @@ import com.peoyecto.venta.deportiva.deporte.model.Carrito;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public Cliente extends Usuario {
+public UsuarioCliente extends Usuario {
     @Column(length = 15)
     private String telefono;
 
