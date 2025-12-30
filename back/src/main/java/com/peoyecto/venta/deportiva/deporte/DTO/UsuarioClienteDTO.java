@@ -19,4 +19,5 @@ import java.time.LocalDateTime;
 public class UsuarioClienteDTO  extends  UsuarioDTO {
     private String telefono;
     private String direccion;
+    private CarritoDTO carrito;
 }
