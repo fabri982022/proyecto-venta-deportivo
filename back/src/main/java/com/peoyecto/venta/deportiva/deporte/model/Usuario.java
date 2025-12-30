@@ -43,7 +43,7 @@ public class Usuario {
     private String nombre_usuario;
 
     @Column
-    private Boolean estado;
+    private Boolean estado=true;
 
     @Enumerated(EnumType.STRING)
     private Rol rol;

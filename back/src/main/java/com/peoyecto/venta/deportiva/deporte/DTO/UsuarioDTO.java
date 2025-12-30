@@ -23,6 +23,6 @@ public class UsuarioDTO {
     private String email;
     private String password;
     private String nombre_usuario;
-    private Boolean estado;
+    private Boolean estado=true;
     private Rol rol;
 }

@@ -59,11 +59,38 @@ public class UsuarioService {
     }
 
     //Metodo para buscar usuario por id
+    public Usuario buscarUsuarioPorId(Long id) {
+        return usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
+    }
+
     //Metodo para modificar usuario
+    public UsuarioDTO modificarUsuario(Long id, UsuarioDTO usuarioDTO) {
+        Usuario usuarioExistente = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        usuarioExistente.setNombre(usuarioDTO.getNombre());
+        usuarioExistente.setApellido(usuarioDTO.getApellido());
+        usuarioExistente.setDni(usuarioDTO.getDni());
+        usuarioExistente.setEmail(usuarioDTO.getEmail());
+        usuarioExistente.setPassword(usuarioDTO.getPassword());
+        usuarioExistente.setNombre_usuario(usuarioDTO.getNombre_usuario());
+        usuarioExistente.setRol(usuarioDTO.getRol());
+        Usuario usuarioActualizado = usuarioRepository.save(usuarioExistente);
+        UsuarioDTO usuarioActualizadoDTO = new UsuarioDTO();
+        asignarValoresComunes(usuarioActualizadoDTO, usuarioActualizado);
+        return usuarioActualizadoDTO;
+    }
     //Metodo para eliminar usuario
+    public void eliminarUsuario(Long id) {
+
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+
+        usuario.setActivo(false);
+        usuarioRepository.save(usuario);
+    }
     //Metodo para listar usuarios
-    
-
-
+    public java.util.List<Usuario> listarUsuarios() {
+        return usuarioRepository.findAll();
+    }
 
 }
