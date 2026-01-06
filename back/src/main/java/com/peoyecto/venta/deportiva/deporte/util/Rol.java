@@ -1,4 +1,4 @@
-package com.peoyecto.venta.deportiva.deporte.model;
+package com.peoyecto.venta.deportiva.deporte.util;
 
 public enum Rol {
     ADMIN,

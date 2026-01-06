@@ -9,9 +9,8 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
-import com.peoyecto.venta.deportiva.deporte.model.Cliente;
+import com.peoyecto.venta.deportiva.deporte.model.UsuarioCliente;
 import com.peoyecto.venta.deportiva.deporte.model.Producto;
-import org.joda.time.DateTime;
 import java.util.List;
 
 @Entity
@@ -29,16 +28,11 @@ public class Carrito {
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = false)
-    private Cliente cliente;
+    private UsuarioCliente cliente;
 
     @ManyToMany
-    @JoinTable(
-        name = "carrito_productos",
-        joinColumns = @JoinColumn(name = "id_carrito"),
-        inverseJoinColumns = @JoinColumn(name = "id_producto")
-    )
+    @JoinTable(name = "carrito_productos", joinColumns = @JoinColumn(name = "id_carrito"), inverseJoinColumns = @JoinColumn(name = "id_producto"))
     private java.util.List<Producto> productos;
-
 
     @Column
     private Integer cantidad;
@@ -48,5 +42,5 @@ public class Carrito {
 
     @Column
     @CreationTimestamp
-    private DateTime fechaCreacion;
+    private LocalDateTime fechaCreacion;
 }

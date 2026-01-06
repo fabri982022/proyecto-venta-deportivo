@@ -6,8 +6,6 @@ import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
-import org.hibernate.annotations.CreationTimestamp;
-import org.hibernate.annotations.UpdateTimestamp;
 import com.peoyecto.venta.deportiva.deporte.util.Rol;
 
 @Data
@@ -43,10 +41,9 @@ public class Usuario {
     private String nombre_usuario;
 
     @Column
-    private Boolean estado=true;
+    private Boolean estado = true;
 
     @Enumerated(EnumType.STRING)
     private Rol rol;
-
 
 }

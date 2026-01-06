@@ -1,17 +1,22 @@
 package com.peoyecto.venta.deportiva.deporte.services;
-import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioAdminDTO;;
-import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioClienteDTO;;
-import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioDTO;;
-import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioLogisticaDTO;;
-import com.peoyecto.venta.deportiva.deporte.model.Usuario;;
-import com.peoyecto.venta.deportiva.deporte.model.UsuarioAdmin;;
-import com.peoyecto.venta.deportiva.deporte.model.UsuarioCliente;;
-import com.peoyecto.venta.deportiva.deporte.model.UsuarioLogistica;;
-import com.peoyecto.venta.deportiva.deporte.repository.UsuarioRepository;;
-import org.springframework.beans.factory.annotation.Autowired;;
-import org.springframework.stereotype.Service;;
-import java.util.Optional;;
+
+import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioAdminDTO;
+import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioClienteDTO;
+import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioDTO;
+import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioLogisticaDTO;
+import com.peoyecto.venta.deportiva.deporte.model.Usuario;
+import com.peoyecto.venta.deportiva.deporte.model.UsuarioAdmin;
+import com.peoyecto.venta.deportiva.deporte.model.UsuarioCliente;
+import com.peoyecto.venta.deportiva.deporte.model.UsuarioLogistica;
+import com.peoyecto.venta.deportiva.deporte.util.Rol;
+import com.peoyecto.venta.deportiva.deporte.repository.UsuarioRepository;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
+import java.util.Optional;
+import lombok.extern.slf4j.Slf4j;
+
 @Service
+@Slf4j
 public class UsuarioService {
     @Autowired
     private UsuarioRepository usuarioRepository;
@@ -21,33 +26,66 @@ public class UsuarioService {
     }
 
     // Método para guardar un usuario genérico
-    public UsuarioClienteDTO guardarUsuarioCliente(UsuarioCliente usuarioCliente) {
+    public UsuarioClienteDTO guardarUsuarioCliente(UsuarioClienteDTO usuarioClienteDTO) {
+        UsuarioCliente usuarioCliente = new UsuarioCliente();
+        log.info("Creando usuario Cliente");
+        log.info("Datos ingresados: Nombre:{}, Apellido:{}, DNI:{}, email:{}, telefono:{}, nombre_usuario:{}",
+                usuarioClienteDTO.getNombre(), usuarioClienteDTO.getApellido(), usuarioClienteDTO.getDni(),
+                usuarioClienteDTO.getEmail(), usuarioClienteDTO.getTelefono(), usuarioClienteDTO.getNombre_usuario());
+        asignarValoresComunesDTOaEntity(usuarioCliente, usuarioClienteDTO);
+        usuarioCliente.setRol(Rol.USER);
+        usuarioCliente.setTelefono(usuarioClienteDTO.getTelefono());
+        usuarioCliente.setDireccion(usuarioClienteDTO.getDireccion());
+        usuarioCliente.setCarrito(null); // Asignar el carrito si es necesario
         UsuarioCliente usuarioGuardado = usuarioRepository.save(usuarioCliente);
-        UsuarioClienteDTO usuarioClienteDTO = new UsuarioClienteDTO();
-        asignarValoresComunes(usuarioClienteDTO, usuarioGuardado);
-        usuarioClienteDTO.setTelefono(usuarioGuardado.getTelefono());
-        usuarioClienteDTO.setDireccion(usuarioGuardado.getDireccion());
-        usuarioClienteDTO.setCarrito(null); // Asignar el carrito si es necesario
-        return usuarioClienteDTO;
+        UsuarioClienteDTO usuarioClienteDTORetorno = new UsuarioClienteDTO();
+        asignarValoresComunesEntityaDTO(usuarioClienteDTORetorno, usuarioGuardado);
+        usuarioClienteDTORetorno.setTelefono(usuarioGuardado.getTelefono());
+        usuarioClienteDTORetorno.setDireccion(usuarioGuardado.getDireccion());
+        usuarioClienteDTORetorno.setRol(usuarioGuardado.getRol());
+        // Asignar el carrito si es necesario
+        log.info("Datos almacenados exitosamente!!");
+        return usuarioClienteDTORetorno;
     }
 
-    public UsuarioAdminDTO guardarUsuarioAdmin(UsuarioAdmin usuarioAdmin) {
+    public UsuarioAdminDTO guardarUsuarioAdmin(UsuarioAdminDTO usuarioAdminDTO) {
+        UsuarioAdmin usuarioAdmin = new UsuarioAdmin();
+        log.info("Creando usuario Admin");
+        log.info("Datos ingresados: Nombre:{}, Apellido:{}, DNI:{}, email:{}, telefono:{}, nombre_usuario:{}",
+                usuarioAdminDTO.getNombre(), usuarioAdminDTO.getApellido(), usuarioAdminDTO.getDni(),
+                usuarioAdminDTO.getEmail(), usuarioAdminDTO.getNombre_usuario());
+        asignarValoresComunesDTOaEntity(usuarioAdmin, usuarioAdminDTO);
+        usuarioAdmin.setRol(Rol.ADMIN);
+        usuarioAdmin.setDepartamento(usuarioAdminDTO.getDepartamento());
+
         UsuarioAdmin usuarioGuardado = usuarioRepository.save(usuarioAdmin);
-        UsuarioAdminDTO usuarioAdminDTO = new UsuarioAdminDTO();
-        asignarValoresComunes(usuarioAdminDTO, usuarioGuardado);
-        usuarioAdminDTO.setDepartamento(usuarioGuardado.getDepartamento());
-        return usuarioAdminDTO;
+        UsuarioAdminDTO usuarioAdminDTORetorno = new UsuarioAdminDTO();
+        asignarValoresComunesEntityaDTO(usuarioAdminDTORetorno, usuarioGuardado);
+        usuarioAdminDTORetorno.setRol(usuarioGuardado.getRol());
+        usuarioAdminDTORetorno.setDepartamento(usuarioGuardado.getDepartamento());
+
+        return usuarioAdminDTORetorno;
     }
 
-    public UsuarioLogisticaDTO guardarUsuarioLogistica(UsuarioLogistica usuarioLogistica) {
+    public UsuarioLogisticaDTO guardarUsuarioLogistica(UsuarioLogisticaDTO usuarioLogisticaDTO) {
+        UsuarioLogistica usuarioLogistica = new UsuarioLogistica();
+        log.info("Creando usuario Logistica");
+        log.info("Datos ingresados: Nombre:{}, Apellido:{}, DNI:{}, email:{}, telefono:{}, nombre_usuario:{}",
+                usuarioLogisticaDTO.getNombre(), usuarioLogisticaDTO.getApellido(), usuarioLogisticaDTO.getDni(),
+                usuarioLogisticaDTO.getEmail(), usuarioLogisticaDTO.getNombre_usuario());
+        asignarValoresComunesDTOaEntity(usuarioLogistica, usuarioLogisticaDTO);
+        usuarioLogistica.setDepartamento(usuarioLogisticaDTO.getDepartamento());
+        usuarioLogistica.setRol(Rol.LOGISTIC);
+
         UsuarioLogistica usuarioGuardado = usuarioRepository.save(usuarioLogistica);
-        UsuarioLogisticaDTO usuarioLogisticaDTO = new UsuarioLogisticaDTO();
-        asignarValoresComunes(usuarioLogisticaDTO, usuarioGuardado);
-        usuarioLogisticaDTO.setDepartamento(usuarioGuardado.getDepartamento());;
-        return usuarioLogisticaDTO;
+        UsuarioLogisticaDTO usuarioLogisticaDTORetorno = new UsuarioLogisticaDTO();
+        asignarValoresComunesEntityaDTO(usuarioLogisticaDTORetorno, usuarioGuardado);
+        usuarioLogisticaDTORetorno.setRol(usuarioGuardado.getRol());
+        usuarioLogisticaDTORetorno.setDepartamento(usuarioGuardado.getDepartamento());
+        return usuarioLogisticaDTORetorno;
     }
 
-    private void asignarValoresComunes(UsuarioDTO usuarioDTO, Usuario usuario) {
+    private void asignarValoresComunesEntityaDTO(UsuarioDTO usuarioDTO, Usuario usuario) {
         usuarioDTO.setId_usuario(usuario.getId_usuario());
         usuarioDTO.setNombre(usuario.getNombre());
         usuarioDTO.setApellido(usuario.getApellido());
@@ -58,12 +96,62 @@ public class UsuarioService {
         usuarioDTO.setRol(usuario.getRol());
     }
 
-    //Metodo para buscar usuario por id
-    public Usuario buscarUsuarioPorId(Long id) {
-        return usuarioRepository.findById(id).orElseThrow(() -> new RuntimeException("Usuario no encontrado con id: " + id));
+    private void asignarValoresComunesDTOaEntity(Usuario usuario, UsuarioDTO usuarioDTO) {
+        usuario.setNombre(usuarioDTO.getNombre());
+        usuario.setApellido(usuarioDTO.getApellido());
+        usuario.setDni(usuarioDTO.getDni());
+        usuario.setEmail(usuarioDTO.getEmail());
+        usuario.setPassword(usuarioDTO.getPassword());
+        usuario.setNombre_usuario(usuarioDTO.getNombre_usuario());
+        usuario.setRol(usuarioDTO.getRol());
     }
 
-    //Metodo para modificar usuario
+    // Método para buscar usuario por id CON LOGS DETALLADOS
+    public Usuario buscarUsuarioPorId(Long id) {
+        log.info("=== Buscando Usuario por ID: {} ===", id);
+
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> {
+                    log.error(" Usuario NO encontrado con ID: {}", id);
+                    return new RuntimeException("Usuario no encontrado con id: " + id);
+                });
+
+        log.info("✓ Usuario encontrado exitosamente:");
+        log.info("  - ID: {}", usuario.getId_usuario());
+        log.info("  - Nombre completo: {} {}", usuario.getNombre(), usuario.getApellido());
+        log.info("  - DNI: {}", usuario.getDni());
+        log.info("  - Email: {}", usuario.getEmail());
+        log.info("  - Usuario: {}", usuario.getNombre_usuario());
+        log.info("  - Rol: {}", usuario.getRol());
+        log.info("  - Estado: {}", usuario.getEstado() ? "Activo" : "Inactivo");
+
+        // Si es un UsuarioCliente, mostrar datos adicionales
+        if (usuario instanceof UsuarioCliente) {
+            UsuarioCliente cliente = (UsuarioCliente) usuario;
+            log.info("  - Tipo: CLIENTE");
+            log.info("  - Teléfono: {}", cliente.getTelefono());
+            log.info("  - Dirección: {}", cliente.getDireccion());
+        }
+
+        // Si es un UsuarioAdmin, mostrar datos adicionales
+        if (usuario instanceof UsuarioAdmin) {
+            UsuarioAdmin admin = (UsuarioAdmin) usuario;
+            log.info("  - Tipo: ADMIN");
+            log.info("  - Departamento: {}", admin.getDepartamento());
+        }
+
+        // Si es un UsuarioLogistica, mostrar datos adicionales
+        if (usuario instanceof UsuarioLogistica) {
+            UsuarioLogistica logistica = (UsuarioLogistica) usuario;
+            log.info("  - Tipo: LOGÍSTICA");
+            log.info("  - Departamento: {}", logistica.getDepartamento());
+        }
+
+        log.info("=================================\n");
+        return usuario;
+    }
+
+    // Metodo para modificar usuario
     public UsuarioDTO modificarUsuario(Long id, UsuarioDTO usuarioDTO) {
         Usuario usuarioExistente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
@@ -76,19 +164,21 @@ public class UsuarioService {
         usuarioExistente.setRol(usuarioDTO.getRol());
         Usuario usuarioActualizado = usuarioRepository.save(usuarioExistente);
         UsuarioDTO usuarioActualizadoDTO = new UsuarioDTO();
-        asignarValoresComunes(usuarioActualizadoDTO, usuarioActualizado);
+        asignarValoresComunesEntityaDTO(usuarioActualizadoDTO, usuarioActualizado);
         return usuarioActualizadoDTO;
     }
-    //Metodo para eliminar usuario
+
+    // Metodo para eliminar usuario
     public void eliminarUsuario(Long id) {
 
         Usuario usuario = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
 
-        usuario.setActivo(false);
+        usuario.setEstado(false);
         usuarioRepository.save(usuario);
     }
-    //Metodo para listar usuarios
+
+    // Metodo para listar usuarios
     public java.util.List<Usuario> listarUsuarios() {
         return usuarioRepository.findAll();
     }
