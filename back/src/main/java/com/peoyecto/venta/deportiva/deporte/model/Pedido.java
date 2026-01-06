@@ -9,8 +9,7 @@ import lombok.Setter;
 import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.UpdateTimestamp;
 import java.time.LocalDateTime;
-import com.peoyecto.venta.deportiva.deporte.model.Cliente;
-
+import com.peoyecto.venta.deportiva.deporte.model.UsuarioCliente;
 
 @Entity
 @Data
@@ -27,7 +26,7 @@ public class Pedido {
 
     @ManyToOne
     @JoinColumn(name = "id_cliente", nullable = false)
-    private Cliente cliente;
+    private UsuarioCliente cliente;
 
     @Column
     private Double total;
