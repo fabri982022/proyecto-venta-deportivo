@@ -24,18 +24,23 @@ public class ProductoService {
 
     public ProductoDTO guardarProducto(ProductoDTO productoDTO) {
         Producto producto = new Producto();
-        log.info("Creando producto");
-        log.info(
-                "Datos ingresados: Nombre:{}, Descripcion:{}, Categoria:{}, Precio:{}, Stock:{}, Disponible:{}, ImagenUrl:{}",
-                productoDTO.getNombre(), productoDTO.getDescripcion(), productoDTO.getCategoria(),
-                productoDTO.getPrecio(), productoDTO.getStock(), productoDTO.getDisponible(),
-                productoDTO.getImagenUrl());
-        ProductoDTOaEntity(producto, productoDTO);
-        Producto productoGuardado = productoRepository.save(producto);
-        ProductoDTO productoDTORetorno = new ProductoDTO();
-        ProductoEntityaDTO(productoDTORetorno, productoGuardado);
-        log.info("Datos almacenados exitosamente!!");
-        return productoDTORetorno;
+        if (!stockDisponible(productoDTO.getStock())) {
+
+            throw new RuntimeException("Stock debe ser mayor a cero");
+        } else {
+            log.info("Creando producto");
+            log.info(
+                    "Datos ingresados: Nombre:{}, Descripcion:{}, Categoria:{}, Precio:{}, Stock:{}, Disponible:{}, ImagenUrl:{}",
+                    productoDTO.getNombre(), productoDTO.getDescripcion(), productoDTO.getCategoria(),
+                    productoDTO.getPrecio(), productoDTO.getStock(), productoDTO.getDisponible(),
+                    productoDTO.getImagenUrl());
+            ProductoDTOaEntity(producto, productoDTO);
+            Producto productoGuardado = productoRepository.save(producto);
+            ProductoDTO productoDTORetorno = new ProductoDTO();
+            ProductoEntityaDTO(productoDTORetorno, productoGuardado);
+            log.info("Datos almacenados exitosamente!!");
+            return productoDTORetorno;
+        }
     }
 
     // obtener producto por id
@@ -71,11 +76,21 @@ public class ProductoService {
                 () -> new RuntimeException("Producto con ID: " + id_producto + " no encontrado"));
         mostrarDatosProducto(productoExistente);
         ProductoDTOaEntity(productoExistente, productoDTO);
-        Producto productoActualizado = productoRepository.save(productoExistente);
-        ProductoDTO productoDTORetorno = new ProductoDTO();
-        ProductoEntityaDTO(productoDTORetorno, productoActualizado);
-        log.info("Producto con ID: {} modificado exitosamente", id_producto);
-        return productoDTORetorno;
+        if (!stockDisponible(productoDTO.getStock())) {
+            throw new RuntimeException("Stock debe ser mayor a cero");
+        } else {
+            Producto productoActualizado = productoRepository.save(productoExistente);
+            ProductoDTO productoDTORetorno = new ProductoDTO();
+            ProductoEntityaDTO(productoDTORetorno, productoActualizado);
+            log.info("Producto con ID: {} modificado exitosamente", id_producto);
+            log.info(
+                    "Datos cambiados Nombre:{}, Descripcion:{}, Categoria:{}, Precio:{}, Stock:{}, Disponible:{}, ImagenUrl:{}",
+                    productoDTORetorno.getNombre(), productoDTORetorno.getDescripcion(),
+                    productoDTORetorno.getCategoria(),
+                    productoDTORetorno.getPrecio(), productoDTORetorno.getStock(), productoDTORetorno.getDisponible(),
+                    productoDTORetorno.getImagenUrl());
+            return productoDTORetorno;
+        }
     }
 
     private void mostrarDatosProducto(Producto producto) {
@@ -106,6 +121,10 @@ public class ProductoService {
         producto.setCategoria(productoDTO.getCategoria());
         producto.setDisponible(productoDTO.getDisponible());
         producto.setImagenUrl(productoDTO.getImagenUrl());
+    }
+
+    private boolean stockDisponible(Integer stock) {
+        return stock != null && stock > 0;
     }
 
 }
