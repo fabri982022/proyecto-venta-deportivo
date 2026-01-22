@@ -16,8 +16,8 @@ import java.util.List;
 @AllArgsConstructor
 public class CarritoDTO {
     private Long id_carrito;
-    private UsuarioClienteDTO cliente;
-    private List<ProductoDTO> productos;
+    private Long id_cliente;
+    private List<CarritoItemDTO> items;
     private Integer cantidad;
     private Double precio_total;
     private LocalDateTime fecha_creacion;
