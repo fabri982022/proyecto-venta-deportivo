@@ -2,6 +2,7 @@ package com.peoyecto.venta.deportiva.deporte.model;
 
 import lombok.Data;
 import jakarta.persistence.*;
+import jakarta.persistence.criteria.CriteriaBuilder.In;
 import lombok.AllArgsConstructor;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
@@ -12,6 +13,7 @@ import java.time.LocalDateTime;
 import com.peoyecto.venta.deportiva.deporte.model.UsuarioCliente;
 import com.peoyecto.venta.deportiva.deporte.model.Producto;
 import java.util.List;
+import java.util.ArrayList;
 
 @Entity
 @Data
@@ -26,16 +28,12 @@ public class Carrito {
     @Column(length = 20)
     private Long id_carrito;
 
-    @ManyToOne
-    @JoinColumn(name = "id_cliente", nullable = false)
+    @OneToOne
+    @JoinColumn(name = "id_cliente", nullable = false, unique = true)
     private UsuarioCliente cliente;
 
-    @ManyToMany
-    @JoinTable(name = "carrito_productos", joinColumns = @JoinColumn(name = "id_carrito"), inverseJoinColumns = @JoinColumn(name = "id_producto"))
-    private java.util.List<Producto> productos;
-
-    @Column
-    private Integer cantidad;
+    @OneToMany(mappedBy = "carrito", cascade = CascadeType.ALL, orphanRemoval = true)
+    private List<CarritoItem> items = new ArrayList<>();
 
     @Column
     private Double precioTotal;
@@ -43,4 +41,16 @@ public class Carrito {
     @Column
     @CreationTimestamp
     private LocalDateTime fechaCreacion;
+
+    public void calcularPrecioTotal() {
+        this.precioTotal = items.stream()
+                .mapToDouble(CarritoItem::getPrecioTotal)
+                .sum();
+    }
+
+    public Integer getCantidad() {
+        return items.stream()
+                .mapToInt(CarritoItem::getCantidad)
+                .sum();
+    }
 }
