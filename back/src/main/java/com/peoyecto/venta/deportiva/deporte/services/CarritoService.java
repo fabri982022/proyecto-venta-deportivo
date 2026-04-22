@@ -98,10 +98,12 @@ public class CarritoService {
     }
 
     public void eliminarCarritoPorClienteId(Long id_usuario) {
-        Carrito carrito = carritoRepository.findByClienteId_usuario(id_usuario);
-        if (carrito != null) {
-            carritoItemRepository.deleteByCarrito(carrito);
-            carritoRepository.delete(carrito);
+        UsuarioCliente cliente = (UsuarioCliente) usuarioRepository.findById(id_usuario).orElse(null);
+        if (cliente != null) {
+            Carrito carrito = carritoRepository.findByCliente(cliente);
+            if (carrito != null) {
+                carritoRepository.delete(carrito);
+            }
         }
     }
 }
