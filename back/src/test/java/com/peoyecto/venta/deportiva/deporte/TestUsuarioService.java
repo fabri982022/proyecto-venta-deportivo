@@ -5,7 +5,6 @@ import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioClienteDTO;
 import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioLogisticaDTO;
 import com.peoyecto.venta.deportiva.deporte.services.UsuarioService;
 import com.peoyecto.venta.deportiva.deporte.util.Rol;
-import com.peoyecto.venta.deportiva.deporte.DTO.CarritoDTO;
 
 import jakarta.transaction.Transactional;
 
@@ -84,7 +83,6 @@ class TestUsuarioService {
         clienteDTO.setNombre_usuario("cliente_test");
         clienteDTO.setTelefono("123456789");
         clienteDTO.setDireccion("Calle Falsa 123");
-        clienteDTO.setCarrito(new CarritoDTO());
 
         logisticaDTO = new UsuarioLogisticaDTO();
 

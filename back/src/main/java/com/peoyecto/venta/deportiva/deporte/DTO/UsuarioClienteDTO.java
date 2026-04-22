@@ -16,8 +16,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
-public class UsuarioClienteDTO  extends  UsuarioDTO {
+public class UsuarioClienteDTO extends UsuarioDTO {
     private String telefono;
     private String direccion;
-    private CarritoDTO carrito;
 }

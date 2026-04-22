@@ -9,12 +9,12 @@ import com.peoyecto.venta.deportiva.deporte.model.UsuarioAdmin;
 import com.peoyecto.venta.deportiva.deporte.model.UsuarioCliente;
 import com.peoyecto.venta.deportiva.deporte.model.UsuarioLogistica;
 import com.peoyecto.venta.deportiva.deporte.util.Rol;
-import com.peoyecto.venta.deportiva.deporte.model.Carrito;
+
 import com.peoyecto.venta.deportiva.deporte.repository.CarritoRepository;
 import com.peoyecto.venta.deportiva.deporte.repository.UsuarioRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+
 import org.springframework.stereotype.Service;
-import java.util.Optional;
+
 import lombok.extern.slf4j.Slf4j;
 
 @Service
@@ -22,11 +22,9 @@ import lombok.extern.slf4j.Slf4j;
 public class UsuarioService {
 
     private UsuarioRepository usuarioRepository;
-    private CarritoRepository carritoRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, CarritoRepository carritoRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository) {
         this.usuarioRepository = usuarioRepository;
-        this.carritoRepository = carritoRepository;
     }
 
     // Método para guardar un usuario genérico
@@ -44,12 +42,6 @@ public class UsuarioService {
         UsuarioCliente usuarioGuardado = usuarioRepository.save(usuarioCliente);
 
         // creacion de carrito automatica al crear usuario cliente
-        Carrito carrito = new Carrito();
-        carrito.setCliente(usuarioGuardado);
-        carrito.setPrecioTotal(0.0);
-        carritoRepository.save(carrito);
-
-        log.info("Carrito creado para el usuario cliente con ID: {}", usuarioGuardado.getId_usuario());
 
         UsuarioClienteDTO usuarioClienteDTORetorno = new UsuarioClienteDTO();
         asignarValoresComunesEntityaDTO(usuarioClienteDTORetorno, usuarioGuardado);

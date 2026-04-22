@@ -22,7 +22,4 @@ public class UsuarioCliente extends Usuario {
     @Column(length = 100)
     private String direccion;
 
-    @OneToOne(mappedBy = "cliente", cascade = CascadeType.ALL)
-    private Carrito carrito;
-
 }

@@ -9,6 +9,7 @@ import lombok.*;
 @AllArgsConstructor
 public class CarritoItemDTO {
     private Long id_carrito_item;
+    private Long id_carrito;
     private ProductoDTO producto;
     private Integer cantidad;
     private Double precioTotal;
