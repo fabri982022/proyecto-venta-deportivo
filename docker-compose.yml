@@ -1,6 +1,23 @@
-version: "3.9"
-
 services:
+  db:
+    image: mysql:8.0
+    container_name: mysql-db
+    environment:
+      MYSQL_ROOT_PASSWORD: password
+      MYSQL_DATABASE: deporte
+    ports:
+      - "3307:3306"
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "mysqladmin ping -h localhost -uroot -ppassword || exit 1"]
+      interval: 10s
+      timeout: 10s
+      retries: 15
+      start_period: 120s
+    volumes:
+      - mysql-data:/var/lib/mysql
+
   backend:
     build:
       context: ./back
@@ -10,7 +27,14 @@ services:
     networks:
       - app-network
     environment:
-      - SPRING_PROFILES_ACTIVE=docker
+      SPRING_PROFILES_ACTIVE: docker
+      SPRING_JPA_HIBERNATE_DDL_AUTO: create
+      SPRING_DATASOURCE_URL: jdbc:mysql://db:3306/deporte
+      SPRING_DATASOURCE_USERNAME: root
+      SPRING_DATASOURCE_PASSWORD: password
+    depends_on:
+      db:
+        condition: service_healthy
 
   frontend:
     build:
@@ -24,8 +48,12 @@ services:
       - REACT_APP_API_URL=http://backend:8080
     depends_on:
       - backend
+      - db
     stdin_open: true
 
 networks:
   app-network:
     driver: bridge
+
+volumes:
+  mysql-data:
