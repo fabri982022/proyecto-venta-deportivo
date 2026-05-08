@@ -24,12 +24,13 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 @Slf4j
-/* @ActiveProfiles("test") */ // Usar profile de test
-/* @Transactional */ // Ahora sí puedes usar transactional
 @SpringBootTest
+@ActiveProfiles("test")
 class TestUsuarioService {
     @Autowired
     UsuarioService usuarioService;
+    @Autowired
+    private com.peoyecto.venta.deportiva.deporte.repository.UsuarioRepository usuarioRepository;
 
     static UsuarioAdminDTO adminDTO;
     static UsuarioClienteDTO clienteDTO;
@@ -43,20 +44,9 @@ class TestUsuarioService {
 
     @BeforeEach
     void setUp() {
-        /**
-         * Usuario
-         * private Long id_usuario;
-         * private String nombre;
-         * private String apellido;
-         * private String dni;
-         * private String email;
-         * private String password;
-         * private String nombre_usuario;
-         * private Boolean estado=true;
-         * private Rol rol;
-         * 
-         * el admin tiene departamento
-         */
+        // Limpiar la base de datos antes de cada test
+        usuarioRepository.deleteAll();
+
         adminDTO = new UsuarioAdminDTO();
 
         adminDTO.setEstado(true);
@@ -139,7 +129,7 @@ class TestUsuarioService {
         Long idBuscado = creado.getId_usuario();
         log.info("Buscando usuario con ID: {}", idBuscado);
         assertDoesNotThrow(() -> {
-            assertNotNull(usuarioService.buscarUsuarioPorId(idBuscado));
+            assertNotNull(usuarioService.obtenerUsuarioPorId(idBuscado));
         });
         log.info("Usuario encontrado: {}", idBuscado);
     }
@@ -150,7 +140,7 @@ class TestUsuarioService {
         Long idNoExistente = 99999L;
         log.info("Buscando usuario con ID: {}", idNoExistente);
         Exception exception = assertThrows(RuntimeException.class, () -> {
-            usuarioService.buscarUsuarioPorId(idNoExistente);
+            usuarioService.obtenerUsuarioPorId(idNoExistente);
         });
         String expectedMessage = "Usuario no encontrado con id: " + idNoExistente;
         String actualMessage = exception.getMessage();
@@ -166,7 +156,7 @@ class TestUsuarioService {
         Long idBuscado = creado.getId_usuario();
         log.info("Buscando usuario con ID: {}", idBuscado);
         assertDoesNotThrow(() -> {
-            assertNotNull(usuarioService.buscarUsuarioPorId(idBuscado));
+            assertNotNull(usuarioService.obtenerUsuarioPorId(idBuscado));
         });
         log.info("Usuario encontrado: {}", idBuscado);
     }

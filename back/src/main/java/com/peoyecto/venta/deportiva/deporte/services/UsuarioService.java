@@ -14,6 +14,7 @@ import com.peoyecto.venta.deportiva.deporte.repository.CarritoRepository;
 import com.peoyecto.venta.deportiva.deporte.repository.UsuarioRepository;
 
 import org.springframework.stereotype.Service;
+import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
 
@@ -112,7 +113,7 @@ public class UsuarioService {
     }
 
     // Método para buscar usuario por id CON LOGS DETALLADOS
-    public Usuario buscarUsuarioPorId(Long id) {
+    public UsuarioDTO obtenerUsuarioPorId(Long id) {
         log.info("=== Buscando Usuario por ID: {} ===", id);
 
         Usuario usuario = usuarioRepository.findById(id)
@@ -130,47 +131,127 @@ public class UsuarioService {
         log.info("  - Rol: {}", usuario.getRol());
         log.info("  - Estado: {}", usuario.getEstado() ? "Activo" : "Inactivo");
 
-        // Si es un UsuarioCliente, mostrar datos adicionales
+        // Si es un UsuarioCliente, convertir a DTO y mostrar datos adicionales
         if (usuario instanceof UsuarioCliente) {
             UsuarioCliente cliente = (UsuarioCliente) usuario;
             log.info("  - Tipo: CLIENTE");
             log.info("  - Teléfono: {}", cliente.getTelefono());
             log.info("  - Dirección: {}", cliente.getDireccion());
+
+            UsuarioClienteDTO clienteDTO = new UsuarioClienteDTO();
+            asignarValoresComunesEntityaDTO(clienteDTO, cliente);
+            clienteDTO.setTelefono(cliente.getTelefono());
+            clienteDTO.setDireccion(cliente.getDireccion());
+            clienteDTO.setRol(cliente.getRol());
+
+            log.info("=================================\n");
+            return clienteDTO;
         }
 
-        // Si es un UsuarioAdmin, mostrar datos adicionales
+        // Si es un UsuarioAdmin, convertir a DTO y mostrar datos adicionales
         if (usuario instanceof UsuarioAdmin) {
             UsuarioAdmin admin = (UsuarioAdmin) usuario;
             log.info("  - Tipo: ADMIN");
             log.info("  - Departamento: {}", admin.getDepartamento());
+
+            UsuarioAdminDTO adminDTO = new UsuarioAdminDTO();
+            asignarValoresComunesEntityaDTO(adminDTO, admin);
+            adminDTO.setDepartamento(admin.getDepartamento());
+            adminDTO.setRol(admin.getRol());
+
+            log.info("=================================\n");
+            return adminDTO;
         }
 
-        // Si es un UsuarioLogistica, mostrar datos adicionales
+        // Si es un UsuarioLogistica, convertir a DTO y mostrar datos adicionales
         if (usuario instanceof UsuarioLogistica) {
             UsuarioLogistica logistica = (UsuarioLogistica) usuario;
             log.info("  - Tipo: LOGÍSTICA");
             log.info("  - Departamento: {}", logistica.getDepartamento());
+
+            UsuarioLogisticaDTO logisticaDTO = new UsuarioLogisticaDTO();
+            asignarValoresComunesEntityaDTO(logisticaDTO, logistica);
+            logisticaDTO.setDepartamento(logistica.getDepartamento());
+            logisticaDTO.setRol(logistica.getRol());
+
+            log.info("=================================\n");
+            return logisticaDTO;
         }
 
+        // Fallback a UsuarioDTO base (nunca debería llegar aquí)
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        asignarValoresComunesEntityaDTO(usuarioDTO, usuario);
         log.info("=================================\n");
-        return usuario;
+        return usuarioDTO;
     }
 
-    // Metodo para modificar usuario
-    public UsuarioDTO modificarUsuario(Long id, UsuarioDTO usuarioDTO) {
+    // Obtener todos los usuarios
+    public List<Usuario> obtenerTodosLosUsuarios() {
+        return usuarioRepository.findAll();
+    }
+
+    // Modificar usuario admin
+    public UsuarioAdminDTO modificarUsuarioAdmin(Long id, UsuarioAdminDTO usuarioAdminDTO) {
         Usuario usuarioExistente = usuarioRepository.findById(id)
                 .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
-        usuarioExistente.setNombre(usuarioDTO.getNombre());
-        usuarioExistente.setApellido(usuarioDTO.getApellido());
-        usuarioExistente.setDni(usuarioDTO.getDni());
-        usuarioExistente.setEmail(usuarioDTO.getEmail());
-        usuarioExistente.setPassword(usuarioDTO.getPassword());
-        usuarioExistente.setNombre_usuario(usuarioDTO.getNombre_usuario());
-        usuarioExistente.setRol(usuarioDTO.getRol());
-        Usuario usuarioActualizado = usuarioRepository.save(usuarioExistente);
-        UsuarioDTO usuarioActualizadoDTO = new UsuarioDTO();
-        asignarValoresComunesEntityaDTO(usuarioActualizadoDTO, usuarioActualizado);
-        return usuarioActualizadoDTO;
+        if (!(usuarioExistente instanceof UsuarioAdmin)) {
+            throw new RuntimeException("El usuario no es un admin");
+        }
+        UsuarioAdmin adminExistente = (UsuarioAdmin) usuarioExistente;
+        adminExistente.setNombre(usuarioAdminDTO.getNombre());
+        adminExistente.setApellido(usuarioAdminDTO.getApellido());
+        adminExistente.setDni(usuarioAdminDTO.getDni());
+        adminExistente.setEmail(usuarioAdminDTO.getEmail());
+        adminExistente.setPassword(usuarioAdminDTO.getPassword());
+        adminExistente.setNombre_usuario(usuarioAdminDTO.getNombre_usuario());
+        adminExistente.setDepartamento(usuarioAdminDTO.getDepartamento());
+        Usuario adminActualizado = usuarioRepository.save(adminExistente);
+        UsuarioAdminDTO adminActualizadoDTO = new UsuarioAdminDTO();
+        asignarValoresComunesEntityaDTO(adminActualizadoDTO, adminActualizado);
+        return adminActualizadoDTO;
+    }
+
+    // Modificar usuario logistica
+    public UsuarioLogisticaDTO modificarUsuarioLogistica(Long id, UsuarioLogisticaDTO usuarioLogisticaDTO) {
+        Usuario usuarioExistente = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (!(usuarioExistente instanceof UsuarioLogistica)) {
+            throw new RuntimeException("El usuario no es un logistica");
+        }
+        UsuarioLogistica logisticaExistente = (UsuarioLogistica) usuarioExistente;
+        logisticaExistente.setNombre(usuarioLogisticaDTO.getNombre());
+        logisticaExistente.setApellido(usuarioLogisticaDTO.getApellido());
+        logisticaExistente.setDni(usuarioLogisticaDTO.getDni());
+        logisticaExistente.setEmail(usuarioLogisticaDTO.getEmail());
+        logisticaExistente.setPassword(usuarioLogisticaDTO.getPassword());
+        logisticaExistente.setNombre_usuario(usuarioLogisticaDTO.getNombre_usuario());
+        logisticaExistente.setDepartamento(usuarioLogisticaDTO.getDepartamento());
+        Usuario logisticaActualizado = usuarioRepository.save(logisticaExistente);
+        UsuarioLogisticaDTO logisticaActualizadoDTO = new UsuarioLogisticaDTO();
+        asignarValoresComunesEntityaDTO(logisticaActualizadoDTO, logisticaActualizado);
+        return logisticaActualizadoDTO;
+    }
+
+    // Modificar usuario cliente
+    public UsuarioClienteDTO modificarUsuarioCliente(Long id, UsuarioClienteDTO usuarioClienteDTO) {
+        Usuario usuarioExistente = usuarioRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Usuario no encontrado"));
+        if (!(usuarioExistente instanceof UsuarioCliente)) {
+            throw new RuntimeException("El usuario no es un cliente");
+        }
+        UsuarioCliente clienteExistente = (UsuarioCliente) usuarioExistente;
+        clienteExistente.setNombre(usuarioClienteDTO.getNombre());
+        clienteExistente.setApellido(usuarioClienteDTO.getApellido());
+        clienteExistente.setDni(usuarioClienteDTO.getDni());
+        clienteExistente.setEmail(usuarioClienteDTO.getEmail());
+        clienteExistente.setPassword(usuarioClienteDTO.getPassword());
+        clienteExistente.setNombre_usuario(usuarioClienteDTO.getNombre_usuario());
+        clienteExistente.setTelefono(usuarioClienteDTO.getTelefono());
+        clienteExistente.setDireccion(usuarioClienteDTO.getDireccion());
+        Usuario clienteActualizado = usuarioRepository.save(clienteExistente);
+        UsuarioClienteDTO clienteActualizadoDTO = new UsuarioClienteDTO();
+        asignarValoresComunesEntityaDTO(clienteActualizadoDTO, clienteActualizado);
+        return clienteActualizadoDTO;
     }
 
     // Metodo para eliminar usuario

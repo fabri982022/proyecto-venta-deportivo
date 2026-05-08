@@ -42,6 +42,7 @@ import java.time.LocalDate;
 
 @Slf4j
 @SpringBootTest
+@ActiveProfiles("test")
 public class TestCarritoService {
 
     @Autowired

@@ -21,10 +21,8 @@ import java.io.IOException;
 import java.time.LocalDate;
 
 @Slf4j
-/* @ActiveProfiles("test") */ // Usar profile de test
-/* @Transactional */ // Ahora sí puedes usar transactional
+@ActiveProfiles("test")
 @SpringBootTest
-
 public class TestProductoService {
 
     @Autowired
