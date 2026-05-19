@@ -12,7 +12,8 @@ import org.springframework.stereotype.Repository;
 public interface CarritoRepository extends JpaRepository<Carrito, Long> {
 
     // Buscar carrito activo de un cliente
-    Carrito findByCliente(UsuarioCliente cliente);
+    @Query("SELECT c FROM Carrito c WHERE c.cliente = :cliente")
+    Carrito findByCliente(@Param("cliente") UsuarioCliente cliente);
 
     // Usar @Query explícita para evitar problemas con snake_case
     @Query("SELECT c FROM Carrito c WHERE c.cliente.id_usuario = :id_usuario")

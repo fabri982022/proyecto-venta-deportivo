@@ -13,18 +13,22 @@ import java.util.List;
 public interface CarritoItemRepository extends JpaRepository<CarritoItem, Long> {
 
     // Buscar item específico en un carrito
-    CarritoItem findByCarritoAndProducto(Carrito carrito, Producto producto);
+    @Query("SELECT ci FROM CarritoItem ci WHERE ci.carrito = :carrito AND ci.producto = :producto")
+    CarritoItem findByCarritoAndProducto(@Param("carrito") Carrito carrito, @Param("producto") Producto producto);
 
     // Listar todos los items de un carrito
-    List<CarritoItem> findByCarrito(Carrito carrito);
+    @Query("SELECT ci FROM CarritoItem ci WHERE ci.carrito = :carrito")
+    List<CarritoItem> findByCarrito(@Param("carrito") Carrito carrito);
 
     // Listar items por ID de carrito - usando @Query
     @Query("SELECT ci FROM CarritoItem ci WHERE ci.carrito.id_carrito = :id_carrito")
     List<CarritoItem> findByCarritoId_carrito(@Param("id_carrito") Long id_carrito);
 
     // Eliminar todos los items de un carrito
-    void deleteByCarrito(Carrito carrito);
+    @Query("DELETE FROM CarritoItem ci WHERE ci.carrito = :carrito")
+    void deleteByCarrito(@Param("carrito") Carrito carrito);
 
     // Verificar si existe un producto en el carrito
-    boolean existsByCarritoAndProducto(Carrito carrito, Producto producto);
+    @Query("SELECT CASE WHEN COUNT(ci) > 0 THEN true ELSE false END FROM CarritoItem ci WHERE ci.carrito = :carrito AND ci.producto = :producto")
+    boolean existsByCarritoAndProducto(@Param("carrito") Carrito carrito, @Param("producto") Producto producto);
 }
