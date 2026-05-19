@@ -204,10 +204,15 @@ public class UsuarioService {
         adminExistente.setEmail(usuarioAdminDTO.getEmail());
         adminExistente.setPassword(usuarioAdminDTO.getPassword());
         adminExistente.setNombre_usuario(usuarioAdminDTO.getNombre_usuario());
-        adminExistente.setDepartamento(usuarioAdminDTO.getDepartamento());
+        // Solo actualizar si no viene null
+        if (usuarioAdminDTO.getDepartamento() != null) {
+            adminExistente.setDepartamento(usuarioAdminDTO.getDepartamento());
+        }
         Usuario adminActualizado = usuarioRepository.save(adminExistente);
         UsuarioAdminDTO adminActualizadoDTO = new UsuarioAdminDTO();
         asignarValoresComunesEntityaDTO(adminActualizadoDTO, adminActualizado);
+        adminActualizadoDTO.setDepartamento(((UsuarioAdmin) adminActualizado).getDepartamento());
+        adminActualizadoDTO.setRol(adminActualizado.getRol());
         return adminActualizadoDTO;
     }
 
@@ -225,10 +230,15 @@ public class UsuarioService {
         logisticaExistente.setEmail(usuarioLogisticaDTO.getEmail());
         logisticaExistente.setPassword(usuarioLogisticaDTO.getPassword());
         logisticaExistente.setNombre_usuario(usuarioLogisticaDTO.getNombre_usuario());
-        logisticaExistente.setDepartamento(usuarioLogisticaDTO.getDepartamento());
+        // Solo actualizar si no viene null
+        if (usuarioLogisticaDTO.getDepartamento() != null) {
+            logisticaExistente.setDepartamento(usuarioLogisticaDTO.getDepartamento());
+        }
         Usuario logisticaActualizado = usuarioRepository.save(logisticaExistente);
         UsuarioLogisticaDTO logisticaActualizadoDTO = new UsuarioLogisticaDTO();
         asignarValoresComunesEntityaDTO(logisticaActualizadoDTO, logisticaActualizado);
+        logisticaActualizadoDTO.setDepartamento(((UsuarioLogistica) logisticaActualizado).getDepartamento());
+        logisticaActualizadoDTO.setRol(logisticaActualizado.getRol());
         return logisticaActualizadoDTO;
     }
 
@@ -246,11 +256,19 @@ public class UsuarioService {
         clienteExistente.setEmail(usuarioClienteDTO.getEmail());
         clienteExistente.setPassword(usuarioClienteDTO.getPassword());
         clienteExistente.setNombre_usuario(usuarioClienteDTO.getNombre_usuario());
-        clienteExistente.setTelefono(usuarioClienteDTO.getTelefono());
-        clienteExistente.setDireccion(usuarioClienteDTO.getDireccion());
+        // Solo actualizar si no viene null
+        if (usuarioClienteDTO.getTelefono() != null) {
+            clienteExistente.setTelefono(usuarioClienteDTO.getTelefono());
+        }
+        if (usuarioClienteDTO.getDireccion() != null) {
+            clienteExistente.setDireccion(usuarioClienteDTO.getDireccion());
+        }
         Usuario clienteActualizado = usuarioRepository.save(clienteExistente);
         UsuarioClienteDTO clienteActualizadoDTO = new UsuarioClienteDTO();
         asignarValoresComunesEntityaDTO(clienteActualizadoDTO, clienteActualizado);
+        clienteActualizadoDTO.setTelefono(((UsuarioCliente) clienteActualizado).getTelefono());
+        clienteActualizadoDTO.setDireccion(((UsuarioCliente) clienteActualizado).getDireccion());
+        clienteActualizadoDTO.setRol(clienteActualizado.getRol());
         return clienteActualizadoDTO;
     }
 
