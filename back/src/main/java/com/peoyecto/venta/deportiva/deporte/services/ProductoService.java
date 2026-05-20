@@ -1,6 +1,5 @@
 package com.peoyecto.venta.deportiva.deporte.services;
 
-import org.springframework.beans.factory.annotation.Autowired;
 import com.peoyecto.venta.deportiva.deporte.repository.ProductoRepository;
 import com.peoyecto.venta.deportiva.deporte.model.Producto;
 import com.peoyecto.venta.deportiva.deporte.DTO.ProductoDTO;
@@ -8,13 +7,13 @@ import com.peoyecto.venta.deportiva.deporte.DTO.ProductoDTO;
 import lombok.extern.slf4j.Slf4j;
 
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
-
+@Transactional
 public class ProductoService {
-    @Autowired
-    private ProductoRepository productoRepository;
+    private final ProductoRepository productoRepository;
 
     public ProductoService(ProductoRepository productoRepository) {
         this.productoRepository = productoRepository;
@@ -23,6 +22,26 @@ public class ProductoService {
     // crear producto
 
     public ProductoDTO guardarProducto(ProductoDTO productoDTO) {
+        // Validar que no exista un producto con el mismo nombre
+        Producto productoExistente = productoRepository.findByNombre(productoDTO.getNombre());
+        if (productoExistente != null) {
+            log.warn("Intento de crear producto duplicado. Nombre: {}", productoDTO.getNombre());
+            throw new RuntimeException("Ya existe un producto con el nombre: " + productoDTO.getNombre());
+        }
+
+        // Validar que no exista un producto con las mismas propiedades
+        Producto productoDuplicado = productoRepository.findByPropiedades(
+                productoDTO.getNombre(),
+                productoDTO.getDescripcion(),
+                productoDTO.getCategoria(),
+                productoDTO.getPrecio(),
+                productoDTO.getStock());
+        if (productoDuplicado != null) {
+            log.warn("Intento de crear producto con propiedades duplicadas. Nombre: {}", productoDTO.getNombre());
+            throw new RuntimeException(
+                    "Ya existe un producto con exactamente las mismas propiedades (nombre, descripción, categoría, precio y stock)");
+        }
+
         Producto producto = new Producto();
         if (!stockDisponible(productoDTO.getStock())) {
 
@@ -41,6 +60,21 @@ public class ProductoService {
             log.info("Datos almacenados exitosamente!!");
             return productoDTORetorno;
         }
+    }
+
+    // obtener todos los productos
+
+    public java.util.List<ProductoDTO> obtenerTodosLosProductos() {
+        log.info("Obteniendo todos los productos");
+        java.util.List<Producto> productos = productoRepository.findAll();
+        java.util.List<ProductoDTO> productosDTO = new java.util.ArrayList<>();
+        for (Producto producto : productos) {
+            ProductoDTO productoDTO = new ProductoDTO();
+            ProductoEntityaDTO(productoDTO, producto);
+            productosDTO.add(productoDTO);
+        }
+        log.info("Total de productos encontrados: {}", productosDTO.size());
+        return productosDTO;
     }
 
     // obtener producto por id
@@ -75,6 +109,30 @@ public class ProductoService {
         Producto productoExistente = productoRepository.findById(id_producto).orElseThrow(
                 () -> new RuntimeException("Producto con ID: " + id_producto + " no encontrado"));
         mostrarDatosProducto(productoExistente);
+
+        // Validar que no exista otro producto con el mismo nombre (excluyendo el
+        // actual)
+        if (!productoExistente.getNombre().equals(productoDTO.getNombre())) {
+            Producto productoConMismoNombre = productoRepository.findByNombre(productoDTO.getNombre());
+            if (productoConMismoNombre != null) {
+                log.warn("Intento de modificar producto a nombre duplicado. Nombre: {}", productoDTO.getNombre());
+                throw new RuntimeException("Ya existe otro producto con el nombre: " + productoDTO.getNombre());
+            }
+        }
+
+        // Validar que no exista un producto con las mismas propiedades
+        Producto productoDuplicado = productoRepository.findByPropiedades(
+                productoDTO.getNombre(),
+                productoDTO.getDescripcion(),
+                productoDTO.getCategoria(),
+                productoDTO.getPrecio(),
+                productoDTO.getStock());
+        if (productoDuplicado != null) {
+            log.warn("Intento de crear producto con propiedades duplicadas. Nombre: {}", productoDTO.getNombre());
+            throw new RuntimeException(
+                    "Ya existe un producto con exactamente las mismas propiedades (nombre, descripción, categoría, precio y stock)");
+        }
+
         ProductoDTOaEntity(productoExistente, productoDTO);
         if (!stockDisponible(productoDTO.getStock())) {
             throw new RuntimeException("Stock debe ser mayor a cero");

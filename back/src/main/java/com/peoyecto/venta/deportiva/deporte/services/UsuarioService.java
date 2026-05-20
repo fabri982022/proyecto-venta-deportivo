@@ -17,9 +17,11 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 import lombok.extern.slf4j.Slf4j;
+import org.springframework.transaction.annotation.Transactional;
 
 @Service
 @Slf4j
+@Transactional
 public class UsuarioService {
 
     private UsuarioRepository usuarioRepository;
