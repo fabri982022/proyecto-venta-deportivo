@@ -120,17 +120,19 @@ public class ProductoService {
             }
         }
 
-        // Validar que no exista un producto con las mismas propiedades
+        // Validar que no exista otro producto con las mismas propiedades (excluyendo
+        // el actual)
         Producto productoDuplicado = productoRepository.findByPropiedades(
                 productoDTO.getNombre(),
                 productoDTO.getDescripcion(),
                 productoDTO.getCategoria(),
                 productoDTO.getPrecio(),
                 productoDTO.getStock());
-        if (productoDuplicado != null) {
-            log.warn("Intento de crear producto con propiedades duplicadas. Nombre: {}", productoDTO.getNombre());
+        if (productoDuplicado != null
+                && !productoDuplicado.getId_producto().equals(id_producto)) {
+            log.warn("Intento de modificar producto a propiedades duplicadas. Nombre: {}", productoDTO.getNombre());
             throw new RuntimeException(
-                    "Ya existe un producto con exactamente las mismas propiedades (nombre, descripción, categoría, precio y stock)");
+                    "Ya existe otro producto con exactamente las mismas propiedades (nombre, descripción, categoría, precio y stock)");
         }
 
         ProductoDTOaEntity(productoExistente, productoDTO);
