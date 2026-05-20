@@ -20,6 +20,7 @@ import java.util.stream.Collectors;
 
 @Service
 @Slf4j
+@Transactional
 @Component
 public class CarritoService {
     private final CarritoRepository carritoRepository;

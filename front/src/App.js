@@ -5,7 +5,7 @@ import { useEffect, useState } from 'react';
 function App() {
   const [backendStatus, setBackendStatus] = useState('checking');
   const [backendData, setBackendData] = useState(null);
-  const apiUrl = 'http://localhost:8080/api/health';
+  const apiUrl = 'http://localhost:8080/api/v1/health';
 
   useEffect(() => {
     // Intentar conectar al backend
