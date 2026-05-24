@@ -172,26 +172,193 @@ DELETE http://localhost:8080/api/v1/productos/{id}
 
 ---
 
-## 🛒 CARRITO API (si está implementado)
+## 🛒 CARRITO API
 
-### 1. Crear Carrito
+### 1. Obtener Carrito de Cliente
 ```bash
-POST http://localhost:8080/api/v1/carrito
+GET http://localhost:8080/api/v1/carrito/cliente/{id_usuario}
 ```
 
-### 2. Obtener Carrito
-```bash
-GET http://localhost:8080/api/v1/carrito/{id}
-```
-
-### 3. Agregar Item al Carrito
-```bash
-POST http://localhost:8080/api/v1/carrito/{carritoId}/items
-
+**Respuesta exitosa (200):**
+```json
 {
-  "producto_id": 1,
-  "cantidad": 2
+  "success": true,
+  "message": "Carrito obtenido exitosamente",
+  "data": {
+    "id_carrito": 1,
+    "id_cliente": 1,
+    "items": [
+      {
+        "id_carrito_item": 1,
+        "cantidad": 2,
+        "producto": {
+          "id_producto": 1,
+          "nombre": "Balón de Fútbol",
+          "precio": 89.99
+        }
+      }
+    ]
+  }
 }
+```
+
+### 2. Verificar si Existe Carrito
+```bash
+GET http://localhost:8080/api/v1/carrito/cliente/{id_usuario}/existe
+```
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "message": "Verificación completada",
+  "data": true
+}
+```
+
+### 3. Obtener Total de Items del Carrito
+```bash
+GET http://localhost:8080/api/v1/carrito/cliente/{id_usuario}/total-items
+```
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "message": "Total de items obtenido",
+  "data": 5
+}
+```
+
+### 4. Calcular Total del Carrito (Precio)
+```bash
+GET http://localhost:8080/api/v1/carrito/cliente/{id_usuario}/total
+```
+
+**Respuesta:**
+```json
+{
+  "success": true,
+  "message": "Total calculado exitosamente",
+  "data": 359.96
+}
+```
+
+### 5. Agregar Item al Carrito
+```bash
+POST http://localhost:8080/api/v1/carrito/cliente/{id_usuario}/item?id_producto=1&cantidad=2
+```
+
+**Parámetros:**
+- `id_producto` (required) - ID del producto a agregar
+- `cantidad` (required) - Cantidad (debe ser > 0)
+
+**Respuesta exitosa (201):**
+```json
+{
+  "success": true,
+  "message": "Item agregado exitosamente",
+  "data": {
+    "id_carrito_item": 1,
+    "cantidad": 2,
+    "producto": {
+      "id_producto": 1,
+      "nombre": "Balón de Fútbol",
+      "precio": 89.99
+    }
+  }
+}
+```
+
+**Ejemplo cURL:**
+```bash
+curl -X POST "http://localhost:8080/api/v1/carrito/cliente/1/item?id_producto=1&cantidad=2" \
+  -H "Content-Type: application/json"
+```
+
+### 6. Actualizar Cantidad de Item
+```bash
+PUT http://localhost:8080/api/v1/carrito/item/{id_carrito_item}?cantidad=5
+```
+
+**Parámetros:**
+- `cantidad` (required) - Nueva cantidad (debe ser > 0)
+
+**Respuesta exitosa (200):**
+```json
+{
+  "success": true,
+  "message": "Cantidad actualizada exitosamente",
+  "data": {
+    "id_carrito_item": 1,
+    "cantidad": 5,
+    "producto": {
+      "id_producto": 1,
+      "nombre": "Balón de Fútbol",
+      "precio": 89.99
+    }
+  }
+}
+```
+
+**Ejemplo cURL:**
+```bash
+curl -X PUT "http://localhost:8080/api/v1/carrito/item/1?cantidad=5" \
+  -H "Content-Type: application/json"
+```
+
+### 7. Eliminar Item del Carrito
+```bash
+DELETE http://localhost:8080/api/v1/carrito/item/{id_carrito_item}
+```
+
+**Respuesta exitosa (200):**
+```json
+{
+  "success": true,
+  "message": "Item eliminado correctamente"
+}
+```
+
+**Ejemplo cURL:**
+```bash
+curl -X DELETE http://localhost:8080/api/v1/carrito/item/1
+```
+
+### 8. Vaciar Carrito (Eliminar todos los items)
+```bash
+DELETE http://localhost:8080/api/v1/carrito/cliente/{id_usuario}/vaciar
+```
+
+**Respuesta exitosa (200):**
+```json
+{
+  "success": true,
+  "message": "Carrito vaciado correctamente"
+}
+```
+
+**Ejemplo cURL:**
+```bash
+curl -X DELETE http://localhost:8080/api/v1/carrito/cliente/1/vaciar
+```
+
+### 9. Eliminar Completamente el Carrito
+```bash
+DELETE http://localhost:8080/api/v1/carrito/cliente/{id_usuario}
+```
+
+**Respuesta exitosa (200):**
+```json
+{
+  "success": true,
+  "message": "Carrito eliminado correctamente"
+}
+```
+
+**Ejemplo cURL:**
+```bash
+curl -X DELETE http://localhost:8080/api/v1/carrito/cliente/1
 ```
 
 ---
@@ -288,6 +455,33 @@ curl -X PUT http://localhost:8080/api/v1/usuarios/cliente/1 \
    - `CLIENTE` - Usuario normal que compra
    - `ADMIN` - Administrador del sistema
    - `LOGISTICA` - Encargado de logística
+
+### 📦 Notas del Carrito
+
+1. **Creación Automática**: El carrito se crea automáticamente cuando:
+   - Un cliente se registra
+   - Se intenta agregar un item a un carrito inexistente
+
+2. **Items**: 
+   - Cada item del carrito vincula un producto con una cantidad
+   - La cantidad debe ser siempre mayor a 0
+   - No se puede duplicar el mismo producto en un carrito (validación futura)
+
+3. **Total del Carrito**:
+   - Se calcula en tiempo real: `suma(precio_producto × cantidad)`
+   - No se almacena en BD, se calcula cada vez que se solicita
+
+4. **Validaciones**:
+   - No se puede agregar un producto que no existe
+   - No se puede agregar un cliente que no existe
+   - La cantidad debe ser mayor a 0
+   - El item a actualizar/eliminar debe existir
+
+5. **Endpoints por Flujo**:
+   - **Consultar**: GET (obtener carrito, verificar existencia, totales)
+   - **Agregar**: POST (nuevo item)
+   - **Modificar**: PUT (cambiar cantidad)
+   - **Eliminar**: DELETE (item, vaciar, carrito completo)
 
 ---
 
