@@ -4,10 +4,13 @@ import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioAdminDTO;
 import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioClienteDTO;
 import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioDTO;
 import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioLogisticaDTO;
+import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioVendedorDTO;
 import com.peoyecto.venta.deportiva.deporte.model.Usuario;
 import com.peoyecto.venta.deportiva.deporte.model.UsuarioAdmin;
 import com.peoyecto.venta.deportiva.deporte.model.UsuarioCliente;
 import com.peoyecto.venta.deportiva.deporte.model.UsuarioLogistica;
+import com.peoyecto.venta.deportiva.deporte.model.UsuarioVendedor;
+import com.peoyecto.venta.deportiva.deporte.model.Carrito;
 import com.peoyecto.venta.deportiva.deporte.util.Rol;
 
 import com.peoyecto.venta.deportiva.deporte.repository.CarritoRepository;
@@ -25,34 +28,38 @@ import org.springframework.transaction.annotation.Transactional;
 public class UsuarioService {
 
     private UsuarioRepository usuarioRepository;
+    private CarritoRepository carritoRepository;
 
-    public UsuarioService(UsuarioRepository usuarioRepository) {
+    public UsuarioService(UsuarioRepository usuarioRepository, CarritoRepository carritoRepository) {
         this.usuarioRepository = usuarioRepository;
+        this.carritoRepository = carritoRepository;
     }
 
-    // Método para guardar un usuario genérico
+    // Guardar Usuario Cliente
     public UsuarioClienteDTO guardarUsuarioCliente(UsuarioClienteDTO usuarioClienteDTO) {
         UsuarioCliente usuarioCliente = new UsuarioCliente();
-        log.info("Creando usuario Cliente");
-        log.info("Datos ingresados: Nombre:{}, Apellido:{}, DNI:{}, email:{}, telefono:{}, nombre_usuario:{}",
+        log.info("Creating Client User");
+        log.info("Input Data: Name:{}, LastName:{}, DNI:{}, email:{}, phone:{}, username:{}",
                 usuarioClienteDTO.getNombre(), usuarioClienteDTO.getApellido(), usuarioClienteDTO.getDni(),
                 usuarioClienteDTO.getEmail(), usuarioClienteDTO.getTelefono(), usuarioClienteDTO.getNombre_usuario());
         asignarValoresComunesDTOaEntity(usuarioCliente, usuarioClienteDTO);
-        usuarioCliente.setRol(Rol.USER);
+        usuarioCliente.setRol(Rol.CLIENTE);
         usuarioCliente.setTelefono(usuarioClienteDTO.getTelefono());
         usuarioCliente.setDireccion(usuarioClienteDTO.getDireccion());
 
         UsuarioCliente usuarioGuardado = usuarioRepository.save(usuarioCliente);
 
-        // creacion de carrito automatica al crear usuario cliente
+        // Crear carrito automaticamente para el cliente
+        Carrito carrito = new Carrito();
+        carrito.setCliente(usuarioGuardado);
+        carritoRepository.save(carrito);
 
         UsuarioClienteDTO usuarioClienteDTORetorno = new UsuarioClienteDTO();
         asignarValoresComunesEntityaDTO(usuarioClienteDTORetorno, usuarioGuardado);
         usuarioClienteDTORetorno.setTelefono(usuarioGuardado.getTelefono());
         usuarioClienteDTORetorno.setDireccion(usuarioGuardado.getDireccion());
         usuarioClienteDTORetorno.setRol(usuarioGuardado.getRol());
-        // Asignar el carrito si es necesario
-        log.info("Datos almacenados exitosamente!!");
+        log.info("User saved successfully");
         return usuarioClienteDTORetorno;
     }
 
@@ -83,7 +90,7 @@ public class UsuarioService {
                 usuarioLogisticaDTO.getEmail(), usuarioLogisticaDTO.getNombre_usuario());
         asignarValoresComunesDTOaEntity(usuarioLogistica, usuarioLogisticaDTO);
         usuarioLogistica.setDepartamento(usuarioLogisticaDTO.getDepartamento());
-        usuarioLogistica.setRol(Rol.LOGISTIC);
+        usuarioLogistica.setRol(Rol.VENDEDOR);
 
         UsuarioLogistica usuarioGuardado = usuarioRepository.save(usuarioLogistica);
         UsuarioLogisticaDTO usuarioLogisticaDTORetorno = new UsuarioLogisticaDTO();
@@ -91,6 +98,48 @@ public class UsuarioService {
         usuarioLogisticaDTORetorno.setRol(usuarioGuardado.getRol());
         usuarioLogisticaDTORetorno.setDepartamento(usuarioGuardado.getDepartamento());
         return usuarioLogisticaDTORetorno;
+    }
+
+    // Guardar Usuario Vendedor
+    public UsuarioVendedorDTO guardarUsuarioVendedor(UsuarioVendedorDTO usuarioVendedorDTO) {
+        UsuarioVendedor usuarioVendedor = new UsuarioVendedor();
+        log.info("Creating Vendor User");
+        log.info("Input Data: Name:{}, LastName:{}, DNI:{}, email:{}, empresa:{}, username:{}",
+                usuarioVendedorDTO.getNombre(), usuarioVendedorDTO.getApellido(), usuarioVendedorDTO.getDni(),
+                usuarioVendedorDTO.getEmail(), usuarioVendedorDTO.getEmpresa(),
+                usuarioVendedorDTO.getNombre_usuario());
+
+        // Asignar campos comunes
+        usuarioVendedor.setNombre(usuarioVendedorDTO.getNombre());
+        usuarioVendedor.setApellido(usuarioVendedorDTO.getApellido());
+        usuarioVendedor.setDni(usuarioVendedorDTO.getDni());
+        usuarioVendedor.setEmail(usuarioVendedorDTO.getEmail());
+        usuarioVendedor.setPassword(usuarioVendedorDTO.getPassword());
+        usuarioVendedor.setNombre_usuario(usuarioVendedorDTO.getNombre_usuario());
+        usuarioVendedor.setRol(Rol.VENDEDOR);
+
+        // Asignar campos específicos del vendedor
+        usuarioVendedor.setEmpresa(usuarioVendedorDTO.getEmpresa());
+        usuarioVendedor.setTelefono_empresa(usuarioVendedorDTO.getTelefono_empresa());
+        usuarioVendedor.setDireccion_empresa(usuarioVendedorDTO.getDireccion_empresa());
+        usuarioVendedor.setRuc(usuarioVendedorDTO.getRuc());
+
+        UsuarioVendedor usuarioGuardado = usuarioRepository.save(usuarioVendedor);
+
+        UsuarioVendedorDTO usuarioVendedorDTORetorno = new UsuarioVendedorDTO();
+        usuarioVendedorDTORetorno.setId_usuario(usuarioGuardado.getId_usuario());
+        usuarioVendedorDTORetorno.setNombre(usuarioGuardado.getNombre());
+        usuarioVendedorDTORetorno.setApellido(usuarioGuardado.getApellido());
+        usuarioVendedorDTORetorno.setDni(usuarioGuardado.getDni());
+        usuarioVendedorDTORetorno.setEmail(usuarioGuardado.getEmail());
+        usuarioVendedorDTORetorno.setNombre_usuario(usuarioGuardado.getNombre_usuario());
+        usuarioVendedorDTORetorno.setRol(usuarioGuardado.getRol().toString());
+        usuarioVendedorDTORetorno.setEmpresa(usuarioGuardado.getEmpresa());
+        usuarioVendedorDTORetorno.setTelefono_empresa(usuarioGuardado.getTelefono_empresa());
+        usuarioVendedorDTORetorno.setDireccion_empresa(usuarioGuardado.getDireccion_empresa());
+        usuarioVendedorDTORetorno.setRuc(usuarioGuardado.getRuc());
+        log.info("Vendor user saved successfully");
+        return usuarioVendedorDTORetorno;
     }
 
     private void asignarValoresComunesEntityaDTO(UsuarioDTO usuarioDTO, Usuario usuario) {
@@ -287,6 +336,35 @@ public class UsuarioService {
     // Metodo para listar usuarios
     public java.util.List<Usuario> listarUsuarios() {
         return usuarioRepository.findAll();
+    }
+
+    // Método para login con nombre_usuario y contraseña
+    public UsuarioDTO login(String nombre_usuario, String password) {
+        log.info("Login attempt for user: {}", nombre_usuario);
+
+        Usuario usuario = usuarioRepository.getUserByNombreUsuario(nombre_usuario);
+
+        if (usuario == null) {
+            log.warn("Usuario no encontrado: {}", nombre_usuario);
+            throw new RuntimeException("Usuario o contraseña incorrectos");
+        }
+
+        // Validar que el usuario esté activo
+        if (usuario.getEstado() == null || !usuario.getEstado()) {
+            log.warn("Usuario inactivo: {}", nombre_usuario);
+            throw new RuntimeException("Usuario inactivo");
+        }
+
+        // Comparar contraseña (en producción usar encryption)
+        if (!usuario.getPassword().equals(password)) {
+            log.warn("Contraseña incorrecta para usuario: {}", nombre_usuario);
+            throw new RuntimeException("Usuario o contraseña incorrectos");
+        }
+
+        log.info("Login exitoso para usuario: {}", nombre_usuario);
+        UsuarioDTO usuarioDTO = new UsuarioDTO();
+        asignarValoresComunesEntityaDTO(usuarioDTO, usuario);
+        return usuarioDTO;
     }
 
 }

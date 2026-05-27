@@ -102,7 +102,7 @@ public class TestCarritoService {
         clienteDTO.setNombre("Cliente");
         clienteDTO.setEmail("cliente@gmail.com");
         clienteDTO.setPassword("cliente123");
-        clienteDTO.setRol(Rol.USER);
+        clienteDTO.setRol(Rol.CLIENTE);
         clienteDTO.setApellido("Apellido");
         clienteDTO.setDni("87654321");
         clienteDTO.setPassword("5678");
@@ -115,7 +115,7 @@ public class TestCarritoService {
         clienteDTO2sinCarro.setNombre("Cliente Sin Carro");
         clienteDTO2sinCarro.setEmail("cliente2@gmail.com");
         clienteDTO2sinCarro.setPassword("cliente123");
-        clienteDTO2sinCarro.setRol(Rol.USER);
+        clienteDTO2sinCarro.setRol(Rol.CLIENTE);
         clienteDTO2sinCarro.setApellido("Apellido2");
         clienteDTO2sinCarro.setDni("12345678");
         clienteDTO2sinCarro.setPassword("5678");

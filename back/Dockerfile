@@ -21,7 +21,7 @@ RUN test -f app.jar || (echo "JAR file not found!" && exit 1)
 EXPOSE 8080
 
 # Healthcheck mejorado - espera más tiempo para que Spring Boot inicie
-HEALTHCHECK --interval=15s --timeout=10s --retries=8 --start-period=180s \
+HEALTHCHECK --interval=15s --timeout=10s --retries=8 --start-period=240s \
     CMD curl -sf http://localhost:8080/api/v1/health > /dev/null || exit 1
 
 # Ejecutar la aplicación directamente
