@@ -1,0 +1,37 @@
+.page-home .hero,
+.page-products,
+.page-cart,
+.page-auth {
+  position: relative;
+}
+
+.page-home .hero::before {
+  content: '';
+  position: absolute;
+  inset: 0 auto auto 0;
+  width: 240px;
+  height: 240px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255, 140, 0, 0.22), transparent 70%);
+  pointer-events: none;
+}
+
+.page-home .hero-copy,
+.page-home .hero-panel,
+.page-products .section-title,
+.page-cart .section-title,
+.page-auth .auth-copy {
+  position: relative;
+  z-index: 1;
+}
+
+.page-home .hero-panel p,
+.page-auth .auth-copy p {
+  color: var(--color-muted);
+}
+
+.page-products .section-title h1,
+.page-cart .section-title h1,
+.page-auth .auth-copy h1 {
+  margin-bottom: 0;
+}

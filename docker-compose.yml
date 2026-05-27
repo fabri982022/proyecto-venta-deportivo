@@ -48,6 +48,7 @@ services:
   backend:
     build:
       context: ./back
+      dockerfile: Dockerfile
     container_name: spring-backend
     ports:
       - "8080:8080"
@@ -67,7 +68,7 @@ services:
       SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.MySQLDialect
       SPRING_DATASOURCE_HIKARI_MAXIMUM_POOL_SIZE: 10
       SPRING_DATASOURCE_HIKARI_MINIMUM_IDLE: 2
-      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 30000
+      SPRING_DATASOURCE_HIKARI_CONNECTION_TIMEOUT: 90000
       SPRING_DATASOURCE_HIKARI_IDLE_TIMEOUT: 300000
       SPRING_DATASOURCE_HIKARI_MAX_LIFETIME: 1200000
     restart: unless-stopped
@@ -76,24 +77,38 @@ services:
       interval: 15s
       timeout: 10s
       retries: 8
-      start_period: 180s
+      start_period: 360s
+    # Volúmenes para desarrollo - permite hot-reload sin reconstruir
+    # Comenta estas líneas si usas en producción
+    volumes:
+      - ./back/src:/app/src:cached
+      - ./back/pom.xml:/app/pom.xml:ro
 
   frontend:
     build:
       context: ./front
+      dockerfile: Dockerfile
     container_name: react-frontend
     ports:
       - "3000:3000"
     networks:
       - app-network
     environment:
-      REACT_APP_API_URL: http://localhost:8080
+      REACT_APP_API_URL: http://backend:8080
+      NODE_ENV: development
     depends_on:
       backend:
         condition: service_healthy
     stdin_open: true
     tty: true
     restart: unless-stopped
+    # Volúmenes para desarrollo - permite hot-reload en React
+    # Comenta estas líneas si usas en producción
+    volumes:
+      - ./front/src:/app/src:cached
+      - ./front/public:/app/public:cached
+      - ./front/.env.local:/app/.env.local:ro
+      - /app/node_modules
 
 networks:
   app-network:

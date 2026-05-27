@@ -3,6 +3,7 @@ package com.peoyecto.venta.deportiva.deporte.DTO;
 import lombok.Data;
 import jakarta.persistence.*;
 import lombok.AllArgsConstructor;
+import lombok.EqualsAndHashCode;
 import lombok.Getter;
 import lombok.NoArgsConstructor;
 import lombok.Setter;
@@ -16,6 +17,7 @@ import java.time.LocalDateTime;
 @Setter
 @NoArgsConstructor
 @AllArgsConstructor
+@EqualsAndHashCode(callSuper = false)
 public class UsuarioClienteDTO extends UsuarioDTO {
     private String telefono;
     private String direccion;

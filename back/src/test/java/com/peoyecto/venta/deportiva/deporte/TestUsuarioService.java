@@ -66,7 +66,7 @@ class TestUsuarioService {
         clienteDTO.setNombre("Cliente");
         clienteDTO.setEmail("cliente@gmail.com");
         clienteDTO.setPassword("cliente123");
-        clienteDTO.setRol(Rol.USER);
+        clienteDTO.setRol(Rol.CLIENTE);
         clienteDTO.setApellido("Apellido");
         clienteDTO.setDni("87654321");
         clienteDTO.setPassword("5678");
@@ -80,7 +80,7 @@ class TestUsuarioService {
         logisticaDTO.setNombre("Logistica");
         logisticaDTO.setEmail("logisitca@gmail.com");
         logisticaDTO.setPassword("logistica123");
-        logisticaDTO.setRol(Rol.LOGISTIC);
+        logisticaDTO.setRol(Rol.VENDEDOR);
         logisticaDTO.setApellido("ApellidoL");
         logisticaDTO.setDni("11223344");
         logisticaDTO.setPassword("91011");

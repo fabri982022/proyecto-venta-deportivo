@@ -1,0 +1,31 @@
+.auth-form button,
+.filters button,
+.summary-actions button,
+.hero-actions a,
+.hero-actions button {
+  min-width: 140px;
+}
+
+.auth-form .btn-primary,
+.auth-form .btn-ghost,
+.filters .btn-primary,
+.filters .btn-ghost {
+  width: auto;
+}
+
+.form-message {
+  margin: 0;
+  color: var(--color-primary);
+}
+
+.auth-form input,
+.auth-form select,
+.filters input,
+.filters select {
+  margin-bottom: 0;
+}
+
+.auth-form,
+.filters {
+  gap: 18px;
+}

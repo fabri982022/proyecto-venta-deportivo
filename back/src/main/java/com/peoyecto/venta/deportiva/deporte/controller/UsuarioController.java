@@ -9,6 +9,7 @@ import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioAdminDTO;
 import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioClienteDTO;
 import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioDTO;
 import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioLogisticaDTO;
+import com.peoyecto.venta.deportiva.deporte.DTO.UsuarioVendedorDTO;
 import com.peoyecto.venta.deportiva.deporte.services.UsuarioService;
 
 import lombok.extern.slf4j.Slf4j;
@@ -91,6 +92,25 @@ public class UsuarioController {
         }
     }
 
+    @PostMapping(value = "/vendedor")
+    public ResponseEntity<Map<String, Object>> crearUsuarioVendedor(
+            @RequestBody UsuarioVendedorDTO usuarioVendedorDTO) {
+        log.info("POST /api/v1/usuarios/vendedor - Creating vendor user");
+        Map<String, Object> response = new HashMap<>();
+        try {
+            UsuarioVendedorDTO usuarioCreado = usuarioService.guardarUsuarioVendedor(usuarioVendedorDTO);
+            response.put("success", true);
+            response.put("message", "Vendor user created successfully");
+            response.put("data", usuarioCreado);
+            return ResponseEntity.status(HttpStatus.CREATED).body(response);
+        } catch (Exception e) {
+            log.error("Error creating vendor user: {}", e.getMessage());
+            response.put("success", false);
+            response.put("message", "Error creating vendor user: " + e.getMessage());
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
     @GetMapping("/{id_usuario}")
     public ResponseEntity<Map<String, Object>> obtenerUsuario(@PathVariable Long id_usuario) {
         log.info("GET /api/v1/usuarios/{} - Obteniendo usuario", id_usuario);
@@ -124,6 +144,39 @@ public class UsuarioController {
             response.put("success", false);
             response.put("message", "Error al listar usuarios: " + e.getMessage());
             return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(response);
+        }
+    }
+
+    @PostMapping("/login")
+    public ResponseEntity<Map<String, Object>> login(@RequestBody Map<String, String> credentials) {
+        log.info("POST /api/v1/usuarios/login - Iniciando sesión");
+        Map<String, Object> response = new HashMap<>();
+        try {
+            String nombre_usuario = credentials.get("nombre_usuario");
+            String password = credentials.get("password");
+
+            if (nombre_usuario == null || nombre_usuario.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "nombre_usuario requerido");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            if (password == null || password.trim().isEmpty()) {
+                response.put("success", false);
+                response.put("message", "password requerido");
+                return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(response);
+            }
+
+            UsuarioDTO usuarioAutenticado = usuarioService.login(nombre_usuario.trim(), password.trim());
+            response.put("success", true);
+            response.put("message", "Sesión iniciada exitosamente");
+            response.put("data", usuarioAutenticado);
+            return ResponseEntity.ok(response);
+        } catch (Exception e) {
+            log.error("Error al iniciar sesión: {}", e.getMessage());
+            response.put("success", false);
+            response.put("message", e.getMessage());
+            return ResponseEntity.status(HttpStatus.UNAUTHORIZED).body(response);
         }
     }
 
